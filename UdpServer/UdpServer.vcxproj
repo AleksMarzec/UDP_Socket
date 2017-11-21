@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{F3B20D33-CEC5-4CF9-ABDD-0D978FFB4D8D}</ProjectGuid>
-    <RootNamespace>UDPSocket</RootNamespace>
+    <ProjectGuid>{3C42DCB4-543A-461C-AEE5-BF8F11CD3455}</ProjectGuid>
+    <RootNamespace>UdpServer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
