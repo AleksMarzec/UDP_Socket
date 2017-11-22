@@ -83,39 +83,33 @@ void UdpClient::run()
 {
 	char buffer;
 	std::string userInput;
+	int L;
 	int receiverAddressesSize = sizeof(ReceiverAddresses);
 
-	std::cout << "\nSEND DATA" << std::endl;
+	std::cout << "\nSEND AMOUNT OF SECONDS (INT)" << std::endl;
 	std::cout << ">> ";
-	std::getline(std::cin, userInput);
+	std::cin >> L;
 
-	if (userInput.size() > 0)				// Checks if user has typed in something 
+	if (!std::cin.fail())				// Checks if user has typed in something 
 	{
-		int sendDataError = sendto(ClientSocket, userInput.c_str(), sizeof(userInput.c_str()), 0, (SOCKADDR*)&ReceiverAddresses, sizeof(ReceiverAddresses));		// Sends user input data
+		//int sendDataError = sendto(ClientSocket, userInput.c_str(), sizeof(userInput.c_str()), 0, (SOCKADDR*)&ReceiverAddresses, sizeof(ReceiverAddresses));		// Sends user input data
 
-		//if (sendDataError != SOCKET_ERROR)
-		//{
-		//	while (true)		// Receives server response
-		//	{
-		//		ZeroMemory(&buffer, 4096);		// Clears a block of memory
-		//		int receivedBytes = recvfrom(ClientSocket, &buffer, sizeof(buffer), 0, (sockaddr*)&ReceiverAddresses, &receiverAddressesSize);
+		int sendDataError = sendto(ClientSocket, (char*)(&L), sizeof(L), 0, (SOCKADDR*)&ReceiverAddresses, sizeof(ReceiverAddresses));
+		if (sendDataError != SOCKET_ERROR)
+		{
 
-		//		if (receivedBytes > 0)
-		//		{
-		//			std::cout << "SERVER_RESPONSE> " << std::string(&buffer, 4096, receivedBytes) << std::endl;
-		//		}
-		//		if (receivedBytes == 0)
-		//		{
-		//			std::cout << "Server has ended the connection." << std::endl;
-		//			break;
-		//		}
-		//	}
-		//}
+			ZeroMemory(&buffer, 4096);		// Clears a block of memory
+			int receivedBytes = recvfrom(ClientSocket, &buffer, sizeof(buffer), 0, (sockaddr*)&ReceiverAddresses, &receiverAddressesSize);
+
+			if (receivedBytes > 0)
+			{
+				std::cout << "SERVER_RESPONSE> " << std::string(&buffer, 4096, receivedBytes) << std::endl;
+			}
+		}
 	}
 	else
 	{
-		std::cerr << "Closing program. No input." << std::endl; // Exception
+		std::cerr << "Closing program. Bad data type or no input." << std::endl; // Exception
 	}
-
 	closeClean();
 }
