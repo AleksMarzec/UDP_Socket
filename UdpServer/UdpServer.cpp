@@ -53,7 +53,7 @@ void UdpServer::createSocket()
 	}
 	else
 	{
-		std::cout << "Listening socket successfully created." << std::endl;
+		std::cout << "Server socket successfully created." << std::endl;
 	}
 }
 
@@ -61,12 +61,22 @@ void UdpServer::bindSocket()
 {
 	SocketAddressesServer.sin_family = AF_INET;
 	SocketAddressesServer.sin_port = htons(port);
-	SocketAddressesServer.sin_addr.S_un.S_addr = INADDR_ANY;	// alternative: inet_pton
+	//SocketAddressesServer.sin_addr.S_un.S_addr = INADDR_ANY;	// alternative: inet_pton
+	SocketAddressesServer.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
 	clientAddressSize = sizeof(SocketAddressesClient);
-	bind(ServerSocket, (sockaddr*)&SocketAddressesServer, sizeof(SocketAddressesServer));
-
-	std::cout << "\nWaiting for client to connect." << std::endl;
+	int bindError = bind(ServerSocket, (SOCKADDR*)&SocketAddressesServer, sizeof(SocketAddressesServer));
+	if (bindError != 0)
+	{
+		std::cerr << "Can't bind socket." << std::endl;
+		std::cerr << "Error #" << WSAGetLastError() << std::endl;
+		closesocket(ServerSocket);
+		WSACleanup();
+	}
+	else
+	{
+		std::cout << "\nWaiting for client to connect." << std::endl;
+	}
 }
 
 
@@ -82,21 +92,21 @@ void UdpServer::run()
 	ZeroMemory(hostRemoteAddress, NI_MAXHOST);	// Just for safety
 	ZeroMemory(clientPortNumber, NI_MAXSERV);
 
-	// Prints client's remote address and port
-	if (getnameinfo((sockaddr*)&SocketAddressesClient, sizeof(SocketAddressesClient), hostRemoteAddress, NI_MAXHOST, clientPortNumber, NI_MAXSERV, 0) == 0)
-	{
-		std::cout << "\n" << hostRemoteAddress << "\tport: " << clientPortNumber << std::endl;
-	}
-	else
-	{
-		inet_ntop(AF_INET, &SocketAddressesClient.sin_addr, hostRemoteAddress, NI_MAXHOST);
-		std::cout << "\n" << hostRemoteAddress << "\tport: " << ntohs(SocketAddressesClient.sin_port) << std::endl;
-	}
+	//// Prints client's remote address and port
+	//if (getnameinfo((sockaddr*)&SocketAddressesClient, sizeof(SocketAddressesClient), hostRemoteAddress, NI_MAXHOST, clientPortNumber, NI_MAXSERV, 0) == 0)
+	//{
+	//	std::cout << "\n" << hostRemoteAddress << "\tport: " << clientPortNumber << std::endl;
+	//}
+	//else
+	//{
+	//	inet_ntop(AF_INET, &SocketAddressesClient.sin_addr, hostRemoteAddress, NI_MAXHOST);
+	//	std::cout << "\n" << hostRemoteAddress << "\tport: " << ntohs(SocketAddressesClient.sin_port) << std::endl;
+	//}
 
 	char buffer[4096];
 	ZeroMemory(&buffer, 4096);
 
-	int receivingError = recvfrom(ServerSocket, buffer, sizeof(buffer), 0, (sockaddr*)&SocketAddressesServer, &clientAddressSize);
+	int receivingError = recvfrom(ServerSocket, buffer, sizeof(&buffer), 0, (SOCKADDR*)&SocketAddressesClient, &clientAddressSize);
 	if (receivingError == SOCKET_ERROR)
 	{
 		std::cerr << "Can't receive data." << std::endl;

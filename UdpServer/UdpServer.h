@@ -15,8 +15,8 @@ private:
 	int clientAddressSize;
 
 	SOCKET ServerSocket;
-	sockaddr_in SocketAddressesServer;
-	sockaddr_in SocketAddressesClient;
+	SOCKADDR_IN SocketAddressesServer;
+	SOCKADDR_IN SocketAddressesClient;
 
 	void initializeWinSock();
 	void createSocket();
