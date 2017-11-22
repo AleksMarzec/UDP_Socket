@@ -75,7 +75,7 @@ void UdpServer::bindSocket()
 	}
 	else
 	{
-		std::cout << "\nWaiting for client to connect." << std::endl;
+		std::cout << "\nWaiting for client to send data..." << std::endl;
 	}
 }
 
@@ -85,23 +85,6 @@ void UdpServer::run()
 	// Use private methods to properly configure server
 	createSocket();
 	bindSocket();
-
-	char hostRemoteAddress[NI_MAXHOST];
-	char clientPortNumber[NI_MAXSERV];
-
-	ZeroMemory(hostRemoteAddress, NI_MAXHOST);	// Just for safety
-	ZeroMemory(clientPortNumber, NI_MAXSERV);
-
-	//// Prints client's remote address and port
-	//if (getnameinfo((sockaddr*)&SocketAddressesClient, sizeof(SocketAddressesClient), hostRemoteAddress, NI_MAXHOST, clientPortNumber, NI_MAXSERV, 0) == 0)
-	//{
-	//	std::cout << "\n" << hostRemoteAddress << "\tport: " << clientPortNumber << std::endl;
-	//}
-	//else
-	//{
-	//	inet_ntop(AF_INET, &SocketAddressesClient.sin_addr, hostRemoteAddress, NI_MAXHOST);
-	//	std::cout << "\n" << hostRemoteAddress << "\tport: " << ntohs(SocketAddressesClient.sin_port) << std::endl;
-	//}
 
 	unsigned buffer;
 	int sleepTime;
@@ -128,43 +111,4 @@ void UdpServer::run()
 	closesocket(ServerSocket);
 	WSACleanup();
 
-	//closesocket(ServerSocket);		// Closing listening socket
-
-	//char buffer[4096];
-	//ZeroMemory(&buffer, 4096);
-
-	//// Wait for client to send data
-
-	//char dataReceived = recv(ClientSocket, buffer, 4096, 0);
-	//if (dataReceived == SOCKET_ERROR)
-	//{
-	//	std::cerr << "\nError while receiving data from client." << std::endl;
-	//	std::cerr << "Error #" << WSAGetLastError() << std::endl;
-	//	closesocket(ClientSocket);
-	//	WSACleanup();
-	//}
-	//else
-	//{
-	//	std::cout << "\nCLIENT> " << std::string(buffer) << std::endl;
-	//}
-
-	//if (dataReceived == 0)
-	//{
-	//	std::cerr << "Client disconnected." << std::endl;
-	//	closesocket(ClientSocket);
-	//	WSACleanup();
-	//}
-
-	//// Send echo message
-	//char tempByte;
-
-	//for (int i = 0; i < dataReceived; i++)
-	//{
-	//	tempByte = buffer[i];
-	//	send(ClientSocket, &tempByte, sizeof(tempByte), 0);
-	//}
-
-	//// Closing listening socket, cleanup
-	//closesocket(ClientSocket);
-	//WSACleanup();
 }

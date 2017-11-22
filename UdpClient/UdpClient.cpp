@@ -64,10 +64,7 @@ void UdpClient::createSocket()
 
 	ReceiverAddresses.sin_family = AF_INET;
 	ReceiverAddresses.sin_port = htons(this->port);
-	//ReceiverAddresses.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 	inet_pton(AF_INET, IPadress.c_str(), &ReceiverAddresses.sin_addr);
-
-	//bind(ClientSocket, (sockaddr*)&ReceiverAddresses, sizeof(ReceiverAddresses));
 }
 
 
@@ -104,9 +101,8 @@ void UdpClient::run()
 				int receivedBytes = recvfrom(ClientSocket, buffer, sizeof(buffer), 0, (sockaddr*)&ReceiverAddresses, &receiverAddressesSize);
 				if (receivedBytes > 0)
 				{
-					//std::cout << "SERVER_RESPONSE> " << std::string(&buffer, 4096, receivedBytes) << std::endl;
 					std::cout << "SERVER_RESPONSE> " << buffer << std::endl;
-
+					break;
 				}
 			}
 		}
@@ -114,6 +110,7 @@ void UdpClient::run()
 		{
 			std::cerr << "Error while sending data." << std::endl;
 			std::cerr << "Error #" << WSAGetLastError() << std::endl;
+			closeClean();
 		}
 	}
 	else
