@@ -103,10 +103,11 @@ void UdpServer::run()
 	//	std::cout << "\n" << hostRemoteAddress << "\tport: " << ntohs(SocketAddressesClient.sin_port) << std::endl;
 	//}
 
-	char buffer[4096];
-	ZeroMemory(&buffer, 4096);
+	unsigned buffer;
+	int sleepTime;
+	char messageToClient[32] = "CZESC";
 
-	int receivingError = recvfrom(ServerSocket, buffer, sizeof(&buffer), 0, (SOCKADDR*)&SocketAddressesClient, &clientAddressSize);
+	int receivingError = recvfrom(ServerSocket, (char*)&buffer, sizeof(int), 0, (SOCKADDR*)&SocketAddressesClient, &clientAddressSize);
 	if (receivingError == SOCKET_ERROR)
 	{
 		std::cerr << "Can't receive data." << std::endl;
@@ -117,10 +118,12 @@ void UdpServer::run()
 	}
 	else
 	{
-		std::cout << "CLIENT>" << buffer << std::endl;
+		sleepTime = (int)ntohl(buffer);
+		std::cout << "CLIENT>" << sleepTime << std::endl;
+		Sleep(sleepTime * 1000);
 	}
 
-	sendto(ServerSocket, buffer, sizeof(buffer), 0, (sockaddr*)&SocketAddressesClient, sizeof(SocketAddressesServer));
+	sendto(ServerSocket, (char*)&messageToClient, sizeof(messageToClient), 0, (sockaddr*)&SocketAddressesClient, sizeof(SocketAddressesServer));
 
 	closesocket(ServerSocket);
 	WSACleanup();

@@ -81,7 +81,7 @@ void UdpClient::closeClean()
 
 void UdpClient::run()
 {
-	char buffer;
+	char buffer[32];
 	std::string userInput;
 	int L;
 	int receiverAddressesSize = sizeof(ReceiverAddresses);
@@ -93,18 +93,27 @@ void UdpClient::run()
 	if (!std::cin.fail())				// Checks if user has typed in something 
 	{
 		//int sendDataError = sendto(ClientSocket, userInput.c_str(), sizeof(userInput.c_str()), 0, (SOCKADDR*)&ReceiverAddresses, sizeof(ReceiverAddresses));		// Sends user input data
-
-		int sendDataError = sendto(ClientSocket, (char*)(&L), sizeof(L), 0, (SOCKADDR*)&ReceiverAddresses, sizeof(ReceiverAddresses));
+		unsigned sleepTime = htonl((unsigned)L);
+		int sendDataError = sendto(ClientSocket, (char*)&sleepTime, sizeof(L), 0, (SOCKADDR*)&ReceiverAddresses, sizeof(ReceiverAddresses));
 		if (sendDataError != SOCKET_ERROR)
 		{
-
-			ZeroMemory(&buffer, 4096);		// Clears a block of memory
-			int receivedBytes = recvfrom(ClientSocket, &buffer, sizeof(buffer), 0, (sockaddr*)&ReceiverAddresses, &receiverAddressesSize);
-
-			if (receivedBytes > 0)
+			ZeroMemory(&buffer, 32);		// Clears a block of memory
+			
+			while (true)
 			{
-				std::cout << "SERVER_RESPONSE> " << std::string(&buffer, 4096, receivedBytes) << std::endl;
+				int receivedBytes = recvfrom(ClientSocket, buffer, sizeof(buffer), 0, (sockaddr*)&ReceiverAddresses, &receiverAddressesSize);
+				if (receivedBytes > 0)
+				{
+					//std::cout << "SERVER_RESPONSE> " << std::string(&buffer, 4096, receivedBytes) << std::endl;
+					std::cout << "SERVER_RESPONSE> " << buffer << std::endl;
+
+				}
 			}
+		}
+		else
+		{
+			std::cerr << "Error while sending data." << std::endl;
+			std::cerr << "Error #" << WSAGetLastError() << std::endl;
 		}
 	}
 	else
